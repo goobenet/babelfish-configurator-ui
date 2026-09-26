@@ -105,51 +105,33 @@ Pick the type whose **I/O shape** matches the panel you're wiring:
 
 ## 4 · Setting a board's address
 
-Every board on a bus needs a unique address **0–7**. That address, plus the bus
-letter, is how you refer to the board in the config. Two boards on the *same bus*
-must never share an address; the same address on *different* buses is fine.
+Every board on a bus needs a unique address **0–7**, set with **jumper straps** on
+the board. That address plus the bus letter (A/B/C) is how you refer to the board in
+the config. **Two boards on the same bus must never share an address** — take care
+not to double up; the same address on a *different* bus is fine.
 
-> **⚠ The exact strap layout isn't nailed down here.** The address is 3 bits, so
-> it's set by three jumper straps — but *which* physical position is which bit, and
-> whether "fitted" means 1 or 0, depends on the board revision and isn't in the
-> material this guide was built from. **Don't trust a printed table for this — find
-> it once on the bench** with the two-minute check below, then write it down.
+The three address straps are labelled **A2 A1 A0** and read as a 3-bit binary
+number — a **fitted** strap adds its value (A2 = 4, A1 = 2, A0 = 1). Fit the straps
+to add up to the address you want:
 
-### Find it empirically (two minutes, one board)
+| Address | A2 (×4) | A1 (×2) | A0 (×1) |
+|:-------:|:-------:|:-------:|:-------:|
+| **0**   | ○       | ○       | ○       |
+| **1**   | ○       | ○       | ●       |
+| **2**   | ○       | ●       | ○       |
+| **3**   | ○       | ●       | ●       |
+| **4**   | ●       | ○       | ○       |
+| **5**   | ●       | ○       | ●       |
+| **6**   | ●       | ●       | ○       |
+| **7**   | ●       | ●       | ●       |
 
-1. Wire **one** board to a bus and power up the hub.
-2. Run a **Bus Scan** — click **Scan buses** on the **Devices** tab in Config
-   Studio (or open the hub's own page at `http://<hub-ip>/busscan`). It probes
-   every bus and address 0–7 and shows a grid of what it found. Config Studio can
-   also add any detected board straight into your configuration.
-3. Note where your board appears (which bus, which address).
-4. **Change one strap, re-scan.** Watch which address it moves to. Two or three
-   changes reveal the whole pattern — which strap is the 1s / 2s / 4s bit, and
-   whether fitted counts as 1 or 0.
-5. Record it in the worksheet below and set the rest of your boards to match.
+● jumper fitted = 1   ○ removed = 0
 
-### Worksheet — the usual 3-bit binary pattern
-
-Most strapped boards use a plain binary scheme: three straps weighted **×1**,
-**×2**, **×4** that add up to the address. Treat this as a *starting hypothesis*
-and tick **Confirmed** once your bus scan agrees (if it reads inverted, swap
-fitted ↔ removed and the pattern still holds):
-
-| Address | strap ×4 | strap ×2 | strap ×1 | Confirmed |
-|:-------:|:--------:|:--------:|:--------:|:---------:|
-| **0**   | ○        | ○        | ○        | ☐         |
-| **1**   | ○        | ○        | ●        | ☐         |
-| **2**   | ○        | ●        | ○        | ☐         |
-| **3**   | ○        | ●        | ●        | ☐         |
-| **4**   | ●        | ○        | ○        | ☐         |
-| **5**   | ●        | ○        | ●        | ☐         |
-| **6**   | ●        | ●        | ○        | ☐         |
-| **7**   | ●        | ●        | ●        | ☐         |
-
-● fitted   ○ removed — but let the Bus Scan tell you which way *your* board reads.
-
-> **ℹ** The number you set on the straps is the `addr=` value you type for that
-> board on the **Devices** tab. Always verify with a **Bus Scan** after wiring.
+> **ℹ** Every board uses these same **A2 / A1 / A0** address jumpers, and the number
+> you strap is the `addr=` value you type for that board on the **Devices** tab.
+> **Sputnik** has one extra jumper that selects its primary/secondary half (its 16
+> cue inputs occupy two addresses). After strapping, run a **Bus Scan** (Devices tab
+> → **Scan buses**) to confirm each board landed where you expect.
 
 ---
 
@@ -244,19 +226,29 @@ that's the cross-system glue.
   `http://<unit-ip>/`. Point any web browser at the unit's IP (outside this tool)
   for a status overview, the **Bus Scan** page, a raw config editor, and a restart
   button. Config Studio is just a friendlier front end to the same unit.
-- **Discover** — every hub broadcasts a UDP beacon; the **Discover** button listens
-  for it and lists units with their IP and firmware. No DHCP-table hunting.
-- **Backup** — always **Download backup** before your first write to a unit; it
-  saves the exact `config.txt` to a timestamped file you can paste back.
+- **Discover** — every hub broadcasts a UDP beacon; **Discover** listens and lists
+  units (IP + firmware) as they answer. A freshly-booted unit replies within
+  seconds; one that's been running a while beacons less often, so discovery listens
+  ~25 s — units pop in as they reply and you can Connect the moment yours appears
+  (or just type its IP).
+- **Backup / Restore** — always **Download backup** before your first write to a
+  unit; it saves the exact `config.txt` to a timestamped file. **Restore backup**
+  (next to it) loads a saved `.txt` back into the editor to review and **Save to
+  unit** — it never pushes on its own.
 - **Save vs Restart** — **Save to unit** writes the config but *outputs don't change
   until you Restart unit*. A restart briefly drops the unit off the network and does
-  **not** send unsaved edits — Save first.
+  **not** send unsaved edits — Save first. After a restart or firmware update the tool
+  waits for the unit and **reconnects automatically**; if you changed its IP it comes
+  back on the new address, so use **Discover** instead.
+- **Firmware update (OTA)** — on the **Overview** tab, click **Browse…** to pick a
+  firmware `.bin` (e.g. `…\Release\Babelfish_Model42.bin`), then **Update firmware on
+  unit** pushes it over the network (same OTA mechanism as `upload.bat`, port 8266).
+  The version pill shows the running firmware. **Do not power off during the update**
+  — the unit reboots when it finishes.
 - **Factory reset** — the factory-reset button is **inside the case**: remove the
   top cover to reach it. Hold it for ≥ 8 seconds at power-up; the hub
   reformats its filesystem and writes a fresh default config, returning to
   `192.168.42.42`. Use this if you lose the address or want a clean slate.
-- **Firmware** — the hub updates over OTA (its default upload target is an IP). The
-  board satellites rarely change.
 
 ---
 
