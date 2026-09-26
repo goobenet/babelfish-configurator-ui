@@ -240,11 +240,12 @@ that's the cross-system glue.
   **not** send unsaved edits — Save first. After a restart or firmware update the tool
   waits for the unit and **reconnects automatically**; if you changed its IP it comes
   back on the new address, so use **Discover** instead.
-- **Firmware update (OTA)** — on the **Overview** tab, click **Browse…** to pick a
-  firmware `.bin` (e.g. `…\Release\Babelfish_Model42.bin`), then **Update firmware on
-  unit** pushes it over the network (same OTA mechanism as `upload.bat`, port 8266).
-  The version pill shows the running firmware. **Do not power off during the update**
-  — the unit reboots when it finishes.
+- **Firmware update (OTA)** — on the **Overview** tab, pick a **Published** version
+  (fetched from the Babelfish repo; tagged *latest* / *installed*) and click **Update
+  to selected**, or **Browse** to a local `.bin` and **Update from file**. Either way
+  it flashes over the network (port 8266); the version pill shows the running
+  firmware. **Do not power off during the update** — the unit reboots and reconnects
+  on its own.
 - **Factory reset** — the factory-reset button is **inside the case**: remove the
   top cover to reach it. Hold it for ≥ 8 seconds at power-up; the hub
   reformats its filesystem and writes a fresh default config, returning to
