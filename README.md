@@ -3,6 +3,7 @@ A new Model 42 has the default IP address of 192.168.42.42, you must have your e
 
 Example: your laptop wired LAN/Desktop PC IP, set to 192.168.42.44, Netmask: 255.255.255.0 No gateway.<br>
 Run configurator tool and press Discover.<br>
+Firmware 1.22 and later: the first time you connect, the configurator asks you to set a web password (required for CRA compliance). Keep it safe; clearing a lost one needs the USB serial console.<br>
 Go to Network & Global<br>
 Set the unit IP address or blank it out for DHCP. We recommend making it static on your network to always know where it is or set a DHCP reservation in your DHCP server.<br><br>
 

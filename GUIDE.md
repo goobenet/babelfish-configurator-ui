@@ -69,10 +69,16 @@ required**. MQTT and TCP are add-ons for remote visibility and cross-system glue
    *Windows: Settings → Network & Internet → Ethernet → IP assignment → Edit → Manual.*
 3. **Connect.** In Config Studio click **New unit?** (fills `192.168.42.42`), then
    **Connect & Load**. Or browse to `http://192.168.42.42/`.
-4. **Give it its real address.** On the **Network & Global** tab set the hostname
+4. **Set its web password.** On firmware 1.22 and later a new unit answers nothing
+   until it has a password, so the tool asks you to choose one the first time you
+   connect (user `admin` unless you change it; at least 8 characters, mixing two of
+   lower case / upper case / digits / symbols). Keep it safe — it cannot be read
+   back, and clearing it needs the USB serial console (`webpass clear`). From then
+   on the tool asks for it once per session.
+5. **Give it its real address.** On the **Network & Global** tab set the hostname
    and either a static `ethernet_ip` / mask / gateway / DNS, *or* clear all Ethernet
    fields for DHCP. **Save to unit**, then **Restart unit**.
-5. **Reconnect on the new address.** Put your PC back on your normal LAN. Use
+6. **Reconnect on the new address.** Put your PC back on your normal LAN. Use
    **Discover** to find the unit at its new address (it broadcasts a beacon), or
    type the IP you assigned.
 
@@ -244,12 +250,17 @@ that's the cross-system glue.
   (fetched from the Babelfish repo; tagged *latest* / *installed*) and click **Update
   to selected**, or **Browse** to a local `.bin` and **Update from file**. Either way
   it flashes over the network (port 8266); the version pill shows the running
-  firmware. **Do not power off during the update** — the unit reboots and reconnects
+  firmware. On firmware 1.23+ the unit keeps its update port shut until asked; the
+  tool opens it for you with the web password. The **OTA password** box is a
+  *separate* password compiled into the firmware the unit is running now — leave it
+  blank for the official builds, which use the standard one. **Do not power off during the update** — the unit reboots and reconnects
   on its own.
 - **Factory reset** — the factory-reset button is **inside the case**: remove the
   top cover to reach it. Hold it for ≥ 8 seconds at power-up; the hub
   reformats its filesystem and writes a fresh default config, returning to
   `192.168.42.42`. Use this if you lose the address or want a clean slate.
+  ⚠ It does **not** clear the web password — that is kept separately, and only
+  `webpass clear` on the USB serial console removes it.
 
 ---
 
