@@ -73,8 +73,9 @@ required**. MQTT and TCP are add-ons for remote visibility and cross-system glue
    until it has a password, so the tool asks you to choose one the first time you
    connect (user `admin` unless you change it; at least 8 characters, mixing two of
    lower case / upper case / digits / symbols). Keep it safe — it cannot be read
-   back, and clearing it needs the USB serial console (`webpass clear`). From then
-   on the tool asks for it once per session.
+   back. If it is lost, a factory reset clears it along with the settings, or
+   `webpass clear` on the USB serial console clears just the password.[^webpass]
+   From then on the tool asks for it once per session.
 5. **Give it its real address.** On the **Network & Global** tab set the hostname
    and either a static `ethernet_ip` / mask / gateway / DNS, *or* clear all Ethernet
    fields for DHCP. **Save to unit**, then **Restart unit**.
@@ -259,8 +260,15 @@ that's the cross-system glue.
   top cover to reach it. Hold it for ≥ 8 seconds at power-up; the hub
   reformats its filesystem and writes a fresh default config, returning to
   `192.168.42.42`. Use this if you lose the address or want a clean slate.
-  ⚠ It does **not** clear the web password — that is kept separately, and only
-  `webpass clear` on the USB serial console removes it.
+  From firmware **1.27** it also clears the web password, so the unit comes back
+  asking for a new one, exactly like a new unit.[^webpass] To clear only the
+  password and keep the settings, use `webpass clear` on the USB serial console.
+
+[^webpass]: **Firmware 1.22 – 1.24:** a factory reset erases the settings but
+    **keeps the web password**, so a unit whose password is lost can only be
+    recovered with `webpass clear` on the USB serial console. **We recommend
+    updating these units to 1.27 or later** (Overview → Firmware update) while you
+    still have the password. Firmware before 1.22 has no web password.
 
 ---
 
